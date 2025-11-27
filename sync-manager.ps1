@@ -461,12 +461,16 @@ function Setup-NextcloudSync {
         Write-Host "❌ Nextcloud nicht gefunden unter: $NextcloudPath" -ForegroundColor $Colors.Error
         Write-Host ""
         Write-Host "Bitte gib den korrekten Pfad an:" -ForegroundColor $Colors.Warning
+        Write-Host "Hinweis: Anführungszeichen werden automatisch entfernt" -ForegroundColor $Colors.Info
         $newPath = Read-Host "Nextcloud-Pfad"
+
+        # Remove quotes if present
+        $newPath = $newPath.Trim('"').Trim("'")
 
         if (Test-Path $newPath) {
             $script:NextcloudPath = $newPath
         } else {
-            Write-Host "❌ Pfad nicht gefunden!" -ForegroundColor $Colors.Error
+            Write-Host "❌ Pfad nicht gefunden: $newPath" -ForegroundColor $Colors.Error
             Wait-AutoClose
             return
         }
@@ -835,6 +839,13 @@ function Request-AdminRights {
             Write-Host "Starte neu mit Admin-Rechten..." -ForegroundColor $Colors.Info
             Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
             exit
+        }
+        else {
+            Write-Host "Fortfahren ohne Admin-Rechte..." -ForegroundColor $Colors.Warning
+            Write-Host "Einige Funktionen (z.B. Symlinks) werden nicht verfügbar sein." -ForegroundColor $Colors.Warning
+            Write-Host ""
+            Write-Host "Drücke ENTER zum Fortfahren..." -ForegroundColor $Colors.Info
+            Read-Host
         }
     }
 }
