@@ -237,6 +237,62 @@ function Show-SystemInfo {
     }
     Write-Host ""
 
+    # Export-Option anbieten
+    Write-Host "Möchten Sie diese Informationen exportieren? (J/N): " -ForegroundColor $Colors.Prompt -NoNewline
+    $exportChoice = [Console]::ReadKey($true)
+    Write-Host ""
+
+    if ($exportChoice.Key -eq 'J' -or $exportChoice.Key -eq 'Y') {
+        $exportPath = Join-Path $env:USERPROFILE "Desktop\system-info-$(Get-Date -Format 'yyyy-MM-dd-HHmm').txt"
+
+        # Sammle alle Infos in String
+        $report = @"
+SYSTEM-INFORMATIONEN - $(Get-Date -Format 'dd.MM.yyyy HH:mm')
+============================================================================
+
+[BETRIEBSSYSTEM]
+  Name:         $($os.Caption)
+  Version:      $($os.Version)
+  Build:        $($os.BuildNumber)
+  Architektur:  $($os.OSArchitecture)
+  Sprache:      $((Get-Culture).Name)
+
+[POWERSHELL]
+  Version:      $($PSVersionTable.PSVersion)
+  Edition:      $($PSVersionTable.PSEdition)
+
+[PYTHON]
+  Version:      $(try { python --version 2>&1 } catch { "Nicht installiert" })
+  Pip:          $(try { python -m pip --version 2>&1 } catch { "N/A" })
+
+[GIT]
+  Version:      $(try { git --version 2>&1 } catch { "Nicht installiert" })
+
+[DOCKER]
+  Version:      $(try { docker --version 2>&1 } catch { "Nicht installiert" })
+  Status:       $(try { if ((docker ps 2>&1) -and $LASTEXITCODE -eq 0) { "Running" } else { "Nicht gestartet" } } catch { "Nicht installiert" })
+
+[NEXTCLOUD]
+  Pfad:         $NextcloudPath
+  Status:       $(if (Test-Path $NextcloudPath) { "Gefunden" } else { "Nicht gefunden" })
+
+[HARDWARE]
+  CPU:          $($cpu.Name)
+  Kerne:        $($cpu.NumberOfCores) Cores ($($cpu.NumberOfLogicalProcessors) Threads)
+  RAM:          $ram GB
+
+[BERECHTIGUNGEN]
+  Status:       $(if ($isAdmin) { "Administrator" } else { "Normaler Benutzer" })
+
+============================================================================
+Exportiert von GitHub Sync Manager v2.0
+"@
+
+        $report | Out-File -FilePath $exportPath -Encoding UTF8
+        Write-Host "✅ Exportiert nach: $exportPath" -ForegroundColor $Colors.Success
+        Start-Sleep -Seconds 2
+    }
+
     Wait-AutoClose
 }
 

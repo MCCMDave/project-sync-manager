@@ -10,6 +10,51 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
+# ============================================================================
+# LANGUAGE SELECTION (if not using switches)
+# ============================================================================
+
+if (-not $Export -and -not $Import) {
+    Write-Host ""
+    Write-Host "============================================================================" -ForegroundColor Cyan
+    Write-Host "      MANUAL SYNC - ZIP EXPORT/IMPORT" -ForegroundColor Cyan
+    Write-Host "============================================================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "Select Language / Sprache wählen:" -ForegroundColor Yellow
+    Write-Host "  1. English" -ForegroundColor White
+    Write-Host "  2. Deutsch" -ForegroundColor White
+    Write-Host "  0. Exit / Beenden" -ForegroundColor White
+    Write-Host ""
+    Write-Host "Press 1, 2, or 0 / Drücke 1, 2 oder 0" -ForegroundColor Gray
+
+    # Wait for single keypress (no Enter required)
+    $langChoice = ""
+    while ($langChoice -notin @("1", "2", "0")) {
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $langChoice = $key.Character
+    }
+
+    Write-Host "Selected / Gewählt: $langChoice" -ForegroundColor Green
+
+    switch ($langChoice) {
+        "1" { $Lang = "DE" }  # Default to DE for now
+        "2" { $Lang = "DE" }
+        "0" {
+            Write-Host ""
+            Write-Host "Exiting in 3 seconds... / Wird in 3 Sekunden beendet..." -ForegroundColor Yellow
+            for ($i = 3; $i -gt 0; $i--) {
+                Write-Host "  $i..." -ForegroundColor Gray
+                Start-Sleep -Seconds 1
+            }
+            exit 0
+        }
+    }
+
+    Clear-Host
+}
 
 # Konfiguration
 $GitHubSource = "C:\Users\david\Desktop\GitHub"
@@ -21,6 +66,7 @@ $Colors = @{
     Warning = "Yellow"
     Error = "Red"
     Info = "White"
+    Prompt = "Magenta"
 }
 
 function Show-Header {
