@@ -1,5 +1,6 @@
 # ============================================================================
-# GitHub Sync Manager
+# GitHub Sync Manager v2.0
+# Interactive menu for project synchronization via Nextcloud
 # Interaktives Menü für Projekt-Synchronisation über Nextcloud
 # ============================================================================
 
@@ -8,12 +9,15 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
 
-# Konfiguration
+# Konfiguration / Configuration
 $GitHubSource = "C:\Users\david\Desktop\GitHub"
 $SyncToolsPath = "C:\Users\david\Desktop\GitHub-Sync-Tools"
+$AutoCloseDelay = 3  # Seconds before auto-close / Sekunden bis automatisches Schließen
 
-# Farben
+# Farben / Colors
 $Colors = @{
     Title = "Cyan"
     Success = "Green"
@@ -23,9 +27,47 @@ $Colors = @{
     Prompt = "Magenta"
 }
 
+# Sprache / Language (DE=Deutsch, EN=English)
+$Lang = "DE"
+
 # ============================================================================
-# HILFSFUNKTIONEN
+# HILFSFUNKTIONEN / HELPER FUNCTIONS
 # ============================================================================
+
+function Get-Text {
+    param([string]$Key)
+
+    $Texts = @{
+        DE = @{
+            Title = "GitHub Sync Manager"
+            SystemInfo = "System-Informationen anzeigen"
+            SyncStatus = "Sync-Status prüfen"
+            ExportReq = "Requirements exportieren (PC 1)"
+            SetupSync = "Sync zu Nextcloud einrichten"
+            CreateVenv = "venv-Ordner erstellen (PC 2)"
+            CreateExclude = "Nextcloud-Exclude-Datei erstellen"
+            ShowSteps = "Alle Schritte anzeigen"
+            Exit = "Beenden"
+            AutoClose = "Schließt automatisch in {0} Sekunden..."
+            PressKey = "Drücke eine beliebige Taste..."
+        }
+        EN = @{
+            Title = "GitHub Sync Manager"
+            SystemInfo = "Show system information"
+            SyncStatus = "Check sync status"
+            ExportReq = "Export requirements (PC 1)"
+            SetupSync = "Setup Nextcloud sync"
+            CreateVenv = "Create venv folders (PC 2)"
+            CreateExclude = "Create Nextcloud exclude file"
+            ShowSteps = "Show all steps"
+            Exit = "Exit"
+            AutoClose = "Auto-closing in {0} seconds..."
+            PressKey = "Press any key..."
+        }
+    }
+
+    return $Texts[$Lang][$Key]
+}
 
 function Show-Header {
     param([string]$Title)
@@ -38,25 +80,41 @@ function Show-Header {
 }
 
 function Show-Menu {
-    Show-Header "GitHub Sync Manager"
+    Show-Header (Get-Text "Title")
 
-    Write-Host "  [1] 📊 System-Informationen anzeigen" -ForegroundColor $Colors.Info
-    Write-Host "  [2] 🔍 Sync-Status prüfen" -ForegroundColor $Colors.Info
-    Write-Host "  [3] 📦 Requirements exportieren (PC 1)" -ForegroundColor $Colors.Info
-    Write-Host "  [4] 🚀 Sync zu Nextcloud einrichten" -ForegroundColor $Colors.Info
-    Write-Host "  [5] 💾 venv-Ordner erstellen (PC 2)" -ForegroundColor $Colors.Info
-    Write-Host "  [6] 🛠️  Nextcloud-Exclude-Datei erstellen" -ForegroundColor $Colors.Info
-    Write-Host "  [7] 📋 Alle Schritte anzeigen" -ForegroundColor $Colors.Info
-    Write-Host "  [0] ❌ Beenden" -ForegroundColor $Colors.Error
+    Write-Host "  [1] 📊 $(Get-Text 'SystemInfo')" -ForegroundColor $Colors.Info
+    Write-Host "  [2] 🔍 $(Get-Text 'SyncStatus')" -ForegroundColor $Colors.Info
+    Write-Host "  [3] 📦 $(Get-Text 'ExportReq')" -ForegroundColor $Colors.Info
+    Write-Host "  [4] 🚀 $(Get-Text 'SetupSync')" -ForegroundColor $Colors.Info
+    Write-Host "  [5] 💾 $(Get-Text 'CreateVenv')" -ForegroundColor $Colors.Info
+    Write-Host "  [6] 🛠️  $(Get-Text 'CreateExclude')" -ForegroundColor $Colors.Info
+    Write-Host "  [7] 📋 $(Get-Text 'ShowSteps')" -ForegroundColor $Colors.Info
+    Write-Host "  [0] ❌ $(Get-Text 'Exit')" -ForegroundColor $Colors.Error
     Write-Host ""
     Write-Host "============================================================================" -ForegroundColor $Colors.Title
     Write-Host ""
 }
 
-function Wait-ForKey {
+function Wait-AutoClose {
     Write-Host ""
-    Write-Host "Drücke eine beliebige Taste um fortzufahren..." -ForegroundColor $Colors.Prompt
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    $Message = Get-Text "AutoClose"
+    Write-Host ($Message -f $AutoCloseDelay) -ForegroundColor $Colors.Warning
+
+    $TimeoutJob = Start-Job -ScriptBlock {
+        Start-Sleep -Seconds $args[0]
+    } -ArgumentList $AutoCloseDelay
+
+    while ($TimeoutJob.State -eq 'Running') {
+        if ([Console]::KeyAvailable) {
+            $null = [Console]::ReadKey($true)
+            Stop-Job $TimeoutJob
+            Remove-Job $TimeoutJob
+            return
+        }
+        Start-Sleep -Milliseconds 100
+    }
+
+    Remove-Job $TimeoutJob
 }
 
 # ============================================================================
@@ -179,7 +237,7 @@ function Show-SystemInfo {
     }
     Write-Host ""
 
-    Wait-ForKey
+    Wait-AutoClose
 }
 
 # ============================================================================
@@ -194,7 +252,7 @@ function Show-SyncStatus {
 
     if (-not (Test-Path $GitHubSource)) {
         Write-Host "  ❌ GitHub-Ordner nicht gefunden: $GitHubSource" -ForegroundColor $Colors.Error
-        Wait-ForKey
+        Wait-AutoClose
         return
     }
 
@@ -294,7 +352,7 @@ function Show-SyncStatus {
     }
     Write-Host ""
 
-    Wait-ForKey
+    Wait-AutoClose
 }
 
 # ============================================================================
@@ -309,7 +367,7 @@ function Export-Requirements {
 
     if (-not (Test-Path $GitHubSource)) {
         Write-Host "❌ GitHub-Ordner nicht gefunden: $GitHubSource" -ForegroundColor $Colors.Error
-        Wait-ForKey
+        Wait-AutoClose
         return
     }
 
@@ -388,7 +446,7 @@ function Export-Requirements {
     Write-Host "============================================================================" -ForegroundColor $Colors.Title
     Write-Host ""
 
-    Wait-ForKey
+    Wait-AutoClose
 }
 
 # ============================================================================
@@ -409,7 +467,7 @@ function Setup-NextcloudSync {
             $script:NextcloudPath = $newPath
         } else {
             Write-Host "❌ Pfad nicht gefunden!" -ForegroundColor $Colors.Error
-            Wait-ForKey
+            Wait-AutoClose
             return
         }
     }
@@ -429,12 +487,13 @@ function Setup-NextcloudSync {
     }
     Write-Host ""
 
-    # Kopiere Projekte
+    # Kopiere Projekte (Ordner)
     Write-Host "Kopiere Projekte nach Nextcloud..." -ForegroundColor $Colors.Info
     Write-Host "(venv, __pycache__, .git, *.log werden ausgeschlossen)" -ForegroundColor $Colors.Warning
     Write-Host ""
 
     if (Test-Path $GitHubSource) {
+        # 1. Kopiere alle Projekt-Ordner
         $projects = Get-ChildItem -Path $GitHubSource -Directory
 
         foreach ($project in $projects) {
@@ -452,6 +511,19 @@ function Setup-NextcloudSync {
                 Write-Host "     ⚠️  Warnung (Exit Code: $LASTEXITCODE)" -ForegroundColor $Colors.Warning
             }
         }
+
+        Write-Host ""
+        Write-Host "Kopiere Hauptordner-Dateien..." -ForegroundColor $Colors.Info
+
+        # 2. Kopiere wichtige Dateien aus dem Hauptordner
+        $mainFiles = Get-ChildItem -Path $GitHubSource -File -Include "*.txt", "*.md", "*.ps1", "*.json" -ErrorAction SilentlyContinue
+
+        foreach ($file in $mainFiles) {
+            Write-Host "  📄 $($file.Name)..." -ForegroundColor $Colors.Info
+            $destFile = Join-Path $nextcloudGithub $file.Name
+            Copy-Item -Path $file.FullName -Destination $destFile -Force
+            Write-Host "     ✅ Kopiert" -ForegroundColor $Colors.Success
+        }
     }
 
     Write-Host ""
@@ -465,7 +537,7 @@ function Setup-NextcloudSync {
     Write-Host "3. Auf PC 2: Verwende Option [5] um venv zu erstellen" -ForegroundColor $Colors.Info
     Write-Host ""
 
-    Wait-ForKey
+    Wait-AutoClose
 }
 
 # ============================================================================
@@ -496,14 +568,14 @@ function Create-Venvs {
         }
         default {
             Write-Host "❌ Ungültige Auswahl" -ForegroundColor $Colors.Error
-            Wait-ForKey
+            Wait-AutoClose
             return
         }
     }
 
     if (-not (Test-Path $sourcePath)) {
         Write-Host "❌ Pfad nicht gefunden: $sourcePath" -ForegroundColor $Colors.Error
-        Wait-ForKey
+        Wait-AutoClose
         return
     }
 
@@ -595,7 +667,7 @@ function Create-Venvs {
     Write-Host "============================================================================" -ForegroundColor $Colors.Title
     Write-Host ""
 
-    Wait-ForKey
+    Wait-AutoClose
 }
 
 # ============================================================================
@@ -610,7 +682,7 @@ function Create-ExcludeFile {
     if (-not (Test-Path $nextcloudGithub)) {
         Write-Host "❌ GitHub-Ordner in Nextcloud nicht gefunden" -ForegroundColor $Colors.Error
         Write-Host "   Verwende zuerst Option [4] um Sync einzurichten" -ForegroundColor $Colors.Warning
-        Wait-ForKey
+        Wait-AutoClose
         return
     }
 
@@ -673,7 +745,7 @@ build/
     Write-Host "Hinweis: Nextcloud muss neu gestartet werden damit die Änderungen wirksam werden!" -ForegroundColor $Colors.Warning
     Write-Host ""
 
-    Wait-ForKey
+    Wait-AutoClose
 }
 
 # ============================================================================
@@ -737,17 +809,49 @@ function Show-AllSteps {
     Write-Host "  → $NextcloudPath\GitHub (Echt)" -ForegroundColor $Colors.Info
     Write-Host ""
 
-    Wait-ForKey
+    Wait-AutoClose
+}
+
+# ============================================================================
+# ADMIN CHECK & ELEVATION
+# ============================================================================
+
+function Test-Admin {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function Request-AdminRights {
+    if (-not (Test-Admin)) {
+        Write-Host ""
+        Write-Host "⚠️  Dieses Skript benötigt Administrator-Rechte für einige Funktionen." -ForegroundColor $Colors.Warning
+        Write-Host "Möchten Sie als Administrator neu starten? (J/N): " -ForegroundColor $Colors.Prompt -NoNewline
+
+        $response = [Console]::ReadKey($true)
+        Write-Host ""
+
+        if ($response.Key -eq 'J' -or $response.Key -eq 'Y') {
+            Write-Host "Starte neu mit Admin-Rechten..." -ForegroundColor $Colors.Info
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+            exit
+        }
+    }
 }
 
 # ============================================================================
 # MAIN MENU LOOP
 # ============================================================================
 
+# Request admin rights on startup
+Request-AdminRights
+
 do {
     Show-Menu
 
-    $choice = Read-Host "Auswahl"
+    # Read single key without Enter
+    $key = [Console]::ReadKey($true)
+    $choice = $key.KeyChar.ToString()
 
     switch ($choice) {
         "1" { Show-SystemInfo }
@@ -759,13 +863,14 @@ do {
         "7" { Show-AllSteps }
         "0" {
             Write-Host ""
-            Write-Host "Auf Wiedersehen! 👋" -ForegroundColor $Colors.Success
+            Write-Host "Auf Wiedersehen! 👋 / Goodbye! 👋" -ForegroundColor $Colors.Success
             Write-Host ""
+            Wait-AutoClose
             exit
         }
         default {
             Write-Host ""
-            Write-Host "❌ Ungültige Auswahl!" -ForegroundColor $Colors.Error
+            Write-Host "❌ Ungültige Auswahl! / Invalid choice!" -ForegroundColor $Colors.Error
             Start-Sleep -Seconds 1
         }
     }
