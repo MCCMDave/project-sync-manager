@@ -28,11 +28,40 @@ $Colors = @{
 }
 
 # Sprache / Language (DE=Deutsch, EN=English)
+# Will be set by Select-Language function
 $Lang = "DE"
 
 # ============================================================================
 # HILFSFUNKTIONEN / HELPER FUNCTIONS
 # ============================================================================
+
+function Select-Language {
+    Clear-Host
+    Write-Host ""
+    Write-Host "============================================================================" -ForegroundColor Cyan
+    Write-Host "  LANGUAGE / SPRACHE" -ForegroundColor Cyan
+    Write-Host "============================================================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  [1] Deutsch" -ForegroundColor White
+    Write-Host "  [2] English" -ForegroundColor White
+    Write-Host ""
+    Write-Host "============================================================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "Wahl / Choice: " -NoNewline -ForegroundColor Magenta
+
+    $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    Write-Host $key.Character -ForegroundColor White
+
+    if ($key.Character -eq "1") {
+        return "DE"
+    }
+    elseif ($key.Character -eq "2") {
+        return "EN"
+    }
+    else {
+        return "DE"  # Default to German
+    }
+}
 
 function Get-Text {
     param([string]$Key)
@@ -909,6 +938,9 @@ function Request-AdminRights {
 # ============================================================================
 # MAIN MENU LOOP
 # ============================================================================
+
+# Select language at startup
+$Lang = Select-Language
 
 # Request admin rights on startup
 Request-AdminRights

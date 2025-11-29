@@ -1,11 +1,36 @@
 # ============================================================================
-# GitHub Repository Setup Script
+# GitHub Repository Setup Script / GitHub Repository Einrichtungs-Skript
 # Hilft beim Erstellen des GitHub Repositories
+# Helps creating GitHub Repositories
 # ============================================================================
 
 $ErrorActionPreference = "Stop"
 
-# Farben
+# ============================================================================
+# LANGUAGE SELECTION / SPRACHAUSWAHL
+# ============================================================================
+
+Write-Host ""
+Write-Host "============================================================================" -ForegroundColor Cyan
+Write-Host "  LANGUAGE / SPRACHE" -ForegroundColor Cyan
+Write-Host "============================================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  [1] Deutsch" -ForegroundColor White
+Write-Host "  [2] English" -ForegroundColor White
+Write-Host ""
+Write-Host "============================================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Wahl / Choice: " -NoNewline -ForegroundColor Magenta
+
+$key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+Write-Host $key.Character -ForegroundColor White
+
+$Lang = if ($key.Character -eq "2") { "EN" } else { "DE" }
+
+# ============================================================================
+# COLORS / FARBEN
+# ============================================================================
+
 $Colors = @{
     Title = "Cyan"
     Success = "Green"
@@ -13,6 +38,171 @@ $Colors = @{
     Error = "Red"
     Info = "White"
     Prompt = "Magenta"
+}
+
+# ============================================================================
+# TEXT TRANSLATIONS / TEXTÜBERSETZUNGEN
+# ============================================================================
+
+function Get-Text {
+    param([string]$Key)
+
+    $Texts = @{
+        DE = @{
+            Header = "GitHub Repository Setup"
+            ProjectInfo = "Projekt:"
+            Name = "Name:"
+            Description = "Beschreibung:"
+            Path = "Pfad:"
+            GitStatus = "Git Status:"
+            GitInitialized = "✅ Git Repository initialisiert"
+            Commits = "✅ Commits:"
+            UncommittedChanges = "⚠️  Uncommitted Changes vorhanden"
+            AllCommitted = "✅ Alle Änderungen committed"
+            NoGitRepo = "❌ Kein Git Repository"
+            PleaseInitGit = "Bitte zuerst Git initialisieren:"
+            GitCLIStatus = "GitHub CLI Status:"
+            GitCLIInstalled = "✅ GitHub CLI installiert:"
+            GitCLILoggedIn = "✅ Bei GitHub angemeldet"
+            GitCLINotLoggedIn = "⚠️  Nicht bei GitHub angemeldet"
+            GitCLINotInstalled = "❌ GitHub CLI nicht installiert"
+            Download = "Download:"
+            OrInstall = "Oder:"
+            GitCLIAvailable = "GitHub CLI ist verfügbar! Empfohlene Methode:"
+            UseGitCLI = "Möchtest du das Repository mit GitHub CLI erstellen?"
+            YesCLI = "[j] Ja, mit GitHub CLI (empfohlen, schnell)"
+            NoManual = "[n] Nein, zeig mir die manuelle Methode"
+            Choice = "Auswahl (j/n)"
+            CreateWithCLI = "Repository erstellen mit GitHub CLI"
+            CheckingLogin = "Prüfe GitHub-Anmeldung..."
+            NotLoggedIn = "Du bist nicht bei GitHub angemeldet."
+            StartingLogin = "Starte GitHub-Login..."
+            LoginFailed = "❌ Login fehlgeschlagen"
+            CreatingRepo = "Erstelle Repository auf GitHub..."
+            RepoSettings = "Repository-Einstellungen:"
+            Visibility = "Sichtbarkeit: Public"
+            License = "Lizenz: Apache-2.0"
+            Continue = "Fortfahren? (j/n):"
+            Creating = "Erstelle Repository..."
+            Success = "✅ Repository erfolgreich erstellt und gepusht!"
+            RepoURL = "Repository URL:"
+            NextSteps = "Nächste Schritte:"
+            Step1 = "1. Besuche dein Repository im Browser"
+            Step2 = "2. Passe ggf. die Description an"
+            Step3 = "3. Füge Topics hinzu (powershell, sync, nextcloud, raspberry-pi)"
+            OpenBrowser = "Im Browser öffnen? (j/n):"
+            CreateError = "❌ Fehler beim Erstellen des Repositories"
+            Cancelled = "Abgebrochen"
+            ManualMethod = "GitHub CLI nicht verfügbar - Verwende manuelle Methode"
+            ManualHeader = "Manuelle Repository-Erstellung"
+            ManualStep1 = "Schritt 1: Repository auf GitHub erstellen"
+            OpenInBrowser = "1. Öffne im Browser:"
+            FillForm = "2. Fülle das Formular aus:"
+            RepoName = "Repository name:"
+            Public = "Public: ✅"
+            AddREADME = "Add README: ❌ (haben wir schon!)"
+            AddGitignore = "Add .gitignore: ❌ (haben wir schon!)"
+            ChooseLicense = "Choose license: Apache License 2.0 ✅"
+            ClickCreate = "3. Klicke 'Create repository'"
+            PressEnterWhenDone = "Drücke ENTER wenn du das Repository erstellt hast..."
+            ManualStep2 = "Schritt 2: Lokales Repository verbinden"
+            EnterUsername = "Bitte gib deinen GitHub-Username ein:"
+            RunCommands = "Führe folgende Befehle aus:"
+            ExecuteNow = "Soll ich diese Befehle jetzt ausführen? (j/n):"
+            AddingRemote = "Füge Remote hinzu..."
+            RemoteAdded = "✅ Remote hinzugefügt"
+            RenamingBranch = "Benenne Branch zu main um..."
+            Pushing = "Pushe zu GitHub..."
+            PushSuccess = "✅ Repository erfolgreich gepusht!"
+            PushError = "❌ Fehler beim Pushen"
+            PossibleIssues = "Mögliche Probleme:"
+            Issue1 = "- Repository existiert nicht auf GitHub"
+            Issue2 = "- Falscher Username"
+            Issue3 = "- Keine Git-Authentifizierung"
+            CheckAndRetry = "Prüfe und versuche es erneut mit:"
+            CommandsNotExecuted = "Befehle wurden nicht ausgeführt."
+            ExecuteManually = "Du kannst sie manuell ausführen wenn du bereit bist."
+            PressAnyKey = "Drücke eine beliebige Taste zum Beenden..."
+        }
+        EN = @{
+            Header = "GitHub Repository Setup"
+            ProjectInfo = "Project:"
+            Name = "Name:"
+            Description = "Description:"
+            Path = "Path:"
+            GitStatus = "Git Status:"
+            GitInitialized = "✅ Git repository initialized"
+            Commits = "✅ Commits:"
+            UncommittedChanges = "⚠️  Uncommitted changes present"
+            AllCommitted = "✅ All changes committed"
+            NoGitRepo = "❌ No Git repository"
+            PleaseInitGit = "Please initialize Git first:"
+            GitCLIStatus = "GitHub CLI Status:"
+            GitCLIInstalled = "✅ GitHub CLI installed:"
+            GitCLILoggedIn = "✅ Logged in to GitHub"
+            GitCLINotLoggedIn = "⚠️  Not logged in to GitHub"
+            GitCLINotInstalled = "❌ GitHub CLI not installed"
+            Download = "Download:"
+            OrInstall = "Or:"
+            GitCLIAvailable = "GitHub CLI is available! Recommended method:"
+            UseGitCLI = "Do you want to create the repository with GitHub CLI?"
+            YesCLI = "[y] Yes, with GitHub CLI (recommended, fast)"
+            NoManual = "[n] No, show me the manual method"
+            Choice = "Choice (y/n)"
+            CreateWithCLI = "Create repository with GitHub CLI"
+            CheckingLogin = "Checking GitHub login..."
+            NotLoggedIn = "You are not logged in to GitHub."
+            StartingLogin = "Starting GitHub login..."
+            LoginFailed = "❌ Login failed"
+            CreatingRepo = "Creating repository on GitHub..."
+            RepoSettings = "Repository settings:"
+            Visibility = "Visibility: Public"
+            License = "License: Apache-2.0"
+            Continue = "Continue? (y/n):"
+            Creating = "Creating repository..."
+            Success = "✅ Repository successfully created and pushed!"
+            RepoURL = "Repository URL:"
+            NextSteps = "Next steps:"
+            Step1 = "1. Visit your repository in the browser"
+            Step2 = "2. Adjust the description if needed"
+            Step3 = "3. Add topics (powershell, sync, nextcloud, raspberry-pi)"
+            OpenBrowser = "Open in browser? (y/n):"
+            CreateError = "❌ Error creating repository"
+            Cancelled = "Cancelled"
+            ManualMethod = "GitHub CLI not available - Using manual method"
+            ManualHeader = "Manual Repository Creation"
+            ManualStep1 = "Step 1: Create repository on GitHub"
+            OpenInBrowser = "1. Open in browser:"
+            FillForm = "2. Fill out the form:"
+            RepoName = "Repository name:"
+            Public = "Public: ✅"
+            AddREADME = "Add README: ❌ (we already have one!)"
+            AddGitignore = "Add .gitignore: ❌ (we already have one!)"
+            ChooseLicense = "Choose license: Apache License 2.0 ✅"
+            ClickCreate = "3. Click 'Create repository'"
+            PressEnterWhenDone = "Press ENTER when you've created the repository..."
+            ManualStep2 = "Step 2: Connect local repository"
+            EnterUsername = "Please enter your GitHub username:"
+            RunCommands = "Run the following commands:"
+            ExecuteNow = "Should I execute these commands now? (y/n):"
+            AddingRemote = "Adding remote..."
+            RemoteAdded = "✅ Remote added"
+            RenamingBranch = "Renaming branch to main..."
+            Pushing = "Pushing to GitHub..."
+            PushSuccess = "✅ Repository successfully pushed!"
+            PushError = "❌ Error pushing"
+            PossibleIssues = "Possible issues:"
+            Issue1 = "- Repository doesn't exist on GitHub"
+            Issue2 = "- Wrong username"
+            Issue3 = "- No Git authentication"
+            CheckAndRetry = "Check and retry with:"
+            CommandsNotExecuted = "Commands were not executed."
+            ExecuteManually = "You can execute them manually when ready."
+            PressAnyKey = "Press any key to exit..."
+        }
+    }
+
+    return $Texts[$Lang][$Key]
 }
 
 function Show-Header {
@@ -25,42 +215,42 @@ function Show-Header {
     Write-Host ""
 }
 
-Show-Header "GitHub Repository Setup"
+Show-Header (Get-Text "Header")
 
-# Projekt-Info
+# Project info
 $repoName = "project-sync-manager"
 $description = "Intelligent sync tool for development projects with Nextcloud support"
 $projectPath = $PSScriptRoot
 
-Write-Host "Projekt:" -ForegroundColor $Colors.Title
-Write-Host "  Name:         $repoName" -ForegroundColor $Colors.Info
-Write-Host "  Beschreibung: $description" -ForegroundColor $Colors.Info
-Write-Host "  Pfad:         $projectPath" -ForegroundColor $Colors.Info
+Write-Host (Get-Text "ProjectInfo") -ForegroundColor $Colors.Title
+Write-Host "  $(Get-Text 'Name')         $repoName" -ForegroundColor $Colors.Info
+Write-Host "  $(Get-Text 'Description')  $description" -ForegroundColor $Colors.Info
+Write-Host "  $(Get-Text 'Path')         $projectPath" -ForegroundColor $Colors.Info
 Write-Host ""
 
-# Prüfe Git Status
-Write-Host "Git Status:" -ForegroundColor $Colors.Title
+# Check Git status
+Write-Host (Get-Text "GitStatus") -ForegroundColor $Colors.Title
 
 Set-Location $projectPath
 
 try {
     $gitStatus = git status --short 2>&1
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "  ✅ Git Repository initialisiert" -ForegroundColor $Colors.Success
+        Write-Host "  $(Get-Text 'GitInitialized')" -ForegroundColor $Colors.Success
 
         $commits = git log --oneline 2>&1 | Measure-Object
-        Write-Host "  ✅ Commits: $($commits.Count)" -ForegroundColor $Colors.Success
+        Write-Host "  $(Get-Text 'Commits') $($commits.Count)" -ForegroundColor $Colors.Success
 
         if ($gitStatus) {
-            Write-Host "  ⚠️  Uncommitted Changes vorhanden" -ForegroundColor $Colors.Warning
+            Write-Host "  $(Get-Text 'UncommittedChanges')" -ForegroundColor $Colors.Warning
         } else {
-            Write-Host "  ✅ Alle Änderungen committed" -ForegroundColor $Colors.Success
+            Write-Host "  $(Get-Text 'AllCommitted')" -ForegroundColor $Colors.Success
         }
     }
 } catch {
-    Write-Host "  ❌ Kein Git Repository" -ForegroundColor $Colors.Error
+    Write-Host "  $(Get-Text 'NoGitRepo')" -ForegroundColor $Colors.Error
     Write-Host ""
-    Write-Host "Bitte zuerst Git initialisieren:" -ForegroundColor $Colors.Warning
+    Write-Host (Get-Text "PleaseInitGit") -ForegroundColor $Colors.Warning
     Write-Host "  git init" -ForegroundColor $Colors.Info
     Write-Host "  git add ." -ForegroundColor $Colors.Info
     Write-Host "  git commit -m 'Initial commit'" -ForegroundColor $Colors.Info
@@ -69,84 +259,87 @@ try {
 
 Write-Host ""
 
-# Prüfe ob GitHub CLI installiert ist
-Write-Host "GitHub CLI Status:" -ForegroundColor $Colors.Title
+# Check if GitHub CLI is installed
+Write-Host (Get-Text "GitCLIStatus") -ForegroundColor $Colors.Title
 
 $hasGhCli = $false
 try {
     $ghVersion = gh --version 2>&1
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "  ✅ GitHub CLI installiert: $($ghVersion[0])" -ForegroundColor $Colors.Success
+        Write-Host "  $(Get-Text 'GitCLIInstalled') $($ghVersion[0])" -ForegroundColor $Colors.Success
         $hasGhCli = $true
 
-        # Prüfe Auth-Status
+        # Check auth status
         $ghAuth = gh auth status 2>&1
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "  ✅ Bei GitHub angemeldet" -ForegroundColor $Colors.Success
+            Write-Host "  $(Get-Text 'GitCLILoggedIn')" -ForegroundColor $Colors.Success
         } else {
-            Write-Host "  ⚠️  Nicht bei GitHub angemeldet" -ForegroundColor $Colors.Warning
+            Write-Host "  $(Get-Text 'GitCLINotLoggedIn')" -ForegroundColor $Colors.Warning
         }
     }
 } catch {
-    Write-Host "  ❌ GitHub CLI nicht installiert" -ForegroundColor $Colors.Warning
-    Write-Host "     Download: https://cli.github.com/" -ForegroundColor $Colors.Info
-    Write-Host "     Oder: winget install GitHub.cli" -ForegroundColor $Colors.Info
+    Write-Host "  $(Get-Text 'GitCLINotInstalled')" -ForegroundColor $Colors.Warning
+    Write-Host "     $(Get-Text 'Download') https://cli.github.com/" -ForegroundColor $Colors.Info
+    Write-Host "     $(Get-Text 'OrInstall') winget install GitHub.cli" -ForegroundColor $Colors.Info
 }
 
 Write-Host ""
 Write-Host "============================================================================" -ForegroundColor $Colors.Title
 Write-Host ""
 
-# Wähle Methode
+# Choose method
+$yesKey = if ($Lang -eq "EN") { "y" } else { "j" }
+$noKey = "n"
+
 if ($hasGhCli) {
-    Write-Host "GitHub CLI ist verfügbar! Empfohlene Methode:" -ForegroundColor $Colors.Success
+    Write-Host (Get-Text "GitCLIAvailable") -ForegroundColor $Colors.Success
     Write-Host ""
-    Write-Host "Möchtest du das Repository mit GitHub CLI erstellen?" -ForegroundColor $Colors.Prompt
-    Write-Host "  [j] Ja, mit GitHub CLI (empfohlen, schnell)" -ForegroundColor $Colors.Success
-    Write-Host "  [n] Nein, zeig mir die manuelle Methode" -ForegroundColor $Colors.Info
+    Write-Host (Get-Text "UseGitCLI") -ForegroundColor $Colors.Prompt
+    Write-Host "  $(Get-Text 'YesCLI')" -ForegroundColor $Colors.Success
+    Write-Host "  $(Get-Text 'NoManual')" -ForegroundColor $Colors.Info
     Write-Host ""
 
-    $choice = Read-Host "Auswahl (j/n)"
+    $choice = Read-Host (Get-Text "Choice")
 
-    if ($choice -eq "j") {
-        # GitHub CLI Methode
-        Show-Header "Repository erstellen mit GitHub CLI"
+    if ($choice -eq $yesKey) {
+        # GitHub CLI method
+        Show-Header (Get-Text "CreateWithCLI")
 
-        Write-Host "Prüfe GitHub-Anmeldung..." -ForegroundColor $Colors.Info
+        Write-Host (Get-Text "CheckingLogin") -ForegroundColor $Colors.Info
 
         $ghAuth = gh auth status 2>&1
         if ($LASTEXITCODE -ne 0) {
             Write-Host ""
-            Write-Host "Du bist nicht bei GitHub angemeldet." -ForegroundColor $Colors.Warning
-            Write-Host "Starte GitHub-Login..." -ForegroundColor $Colors.Info
+            Write-Host (Get-Text "NotLoggedIn") -ForegroundColor $Colors.Warning
+            Write-Host (Get-Text "StartingLogin") -ForegroundColor $Colors.Info
             Write-Host ""
 
             gh auth login
 
             if ($LASTEXITCODE -ne 0) {
                 Write-Host ""
-                Write-Host "❌ Login fehlgeschlagen" -ForegroundColor $Colors.Error
+                Write-Host (Get-Text "LoginFailed") -ForegroundColor $Colors.Error
                 exit 1
             }
         }
 
         Write-Host ""
-        Write-Host "Erstelle Repository auf GitHub..." -ForegroundColor $Colors.Info
+        Write-Host (Get-Text "CreatingRepo") -ForegroundColor $Colors.Info
         Write-Host ""
-        Write-Host "Repository-Einstellungen:" -ForegroundColor $Colors.Title
-        Write-Host "  Name:         $repoName" -ForegroundColor $Colors.Info
-        Write-Host "  Beschreibung: $description" -ForegroundColor $Colors.Info
-        Write-Host "  Sichtbarkeit: Public" -ForegroundColor $Colors.Info
-        Write-Host "  Lizenz:       Apache-2.0" -ForegroundColor $Colors.Info
+        Write-Host (Get-Text "RepoSettings") -ForegroundColor $Colors.Title
+        Write-Host "  $(Get-Text 'Name')         $repoName" -ForegroundColor $Colors.Info
+        Write-Host "  $(Get-Text 'Description')  $description" -ForegroundColor $Colors.Info
+        Write-Host "  $(Get-Text 'Visibility')" -ForegroundColor $Colors.Info
+        Write-Host "  $(Get-Text 'License')" -ForegroundColor $Colors.Info
         Write-Host ""
-        Write-Host "Fortfahren? (j/n): " -ForegroundColor $Colors.Prompt -NoNewline
+        Write-Host (Get-Text "Continue") -ForegroundColor $Colors.Prompt -NoNewline
         $confirm = Read-Host
 
-        if ($confirm -eq "j") {
+        if ($confirm -eq $yesKey) {
             Write-Host ""
-            Write-Host "Erstelle Repository..." -ForegroundColor $Colors.Info
+            Write-Host (Get-Text "Creating") -ForegroundColor $Colors.Info
 
-            # Erstelle Repo und pushe
+            # Create repo and push
             gh repo create $repoName `
                 --public `
                 --description $description `
@@ -157,80 +350,80 @@ if ($hasGhCli) {
             if ($LASTEXITCODE -eq 0) {
                 Write-Host ""
                 Write-Host "============================================================================" -ForegroundColor $Colors.Success
-                Write-Host "  ✅ Repository erfolgreich erstellt und gepusht!" -ForegroundColor $Colors.Success
+                Write-Host "  $(Get-Text 'Success')" -ForegroundColor $Colors.Success
                 Write-Host "============================================================================" -ForegroundColor $Colors.Success
                 Write-Host ""
 
-                # Hole Username
+                # Get username
                 $ghUser = gh api user --jq '.login' 2>&1
 
-                Write-Host "Repository URL:" -ForegroundColor $Colors.Title
+                Write-Host (Get-Text "RepoURL") -ForegroundColor $Colors.Title
                 Write-Host "  https://github.com/$ghUser/$repoName" -ForegroundColor $Colors.Info
                 Write-Host ""
-                Write-Host "Nächste Schritte:" -ForegroundColor $Colors.Title
-                Write-Host "  1. Besuche dein Repository im Browser" -ForegroundColor $Colors.Info
-                Write-Host "  2. Passe ggf. die Description an" -ForegroundColor $Colors.Info
-                Write-Host "  3. Füge Topics hinzu (powershell, sync, nextcloud, raspberry-pi)" -ForegroundColor $Colors.Info
+                Write-Host (Get-Text "NextSteps") -ForegroundColor $Colors.Title
+                Write-Host "  $(Get-Text 'Step1')" -ForegroundColor $Colors.Info
+                Write-Host "  $(Get-Text 'Step2')" -ForegroundColor $Colors.Info
+                Write-Host "  $(Get-Text 'Step3')" -ForegroundColor $Colors.Info
                 Write-Host ""
 
-                Write-Host "Im Browser öffnen? (j/n): " -ForegroundColor $Colors.Prompt -NoNewline
+                Write-Host (Get-Text "OpenBrowser") -ForegroundColor $Colors.Prompt -NoNewline
                 $openBrowser = Read-Host
 
-                if ($openBrowser -eq "j") {
+                if ($openBrowser -eq $yesKey) {
                     gh repo view --web
                 }
             } else {
                 Write-Host ""
-                Write-Host "❌ Fehler beim Erstellen des Repositories" -ForegroundColor $Colors.Error
+                Write-Host (Get-Text "CreateError") -ForegroundColor $Colors.Error
             }
         } else {
-            Write-Host "Abgebrochen" -ForegroundColor $Colors.Warning
+            Write-Host (Get-Text "Cancelled") -ForegroundColor $Colors.Warning
         }
     } else {
-        # Manuelle Methode zeigen
+        # Show manual method
         Show-Manual-Method
     }
 } else {
-    # GitHub CLI nicht verfügbar - zeige manuelle Methode
-    Write-Host "GitHub CLI nicht verfügbar - Verwende manuelle Methode" -ForegroundColor $Colors.Info
+    # GitHub CLI not available - show manual method
+    Write-Host (Get-Text "ManualMethod") -ForegroundColor $Colors.Info
     Write-Host ""
     Show-Manual-Method
 }
 
 function Show-Manual-Method {
-    Show-Header "Manuelle Repository-Erstellung"
+    Show-Header (Get-Text "ManualHeader")
 
-    Write-Host "Schritt 1: Repository auf GitHub erstellen" -ForegroundColor $Colors.Title
+    Write-Host (Get-Text "ManualStep1") -ForegroundColor $Colors.Title
     Write-Host ""
-    Write-Host "  1. Öffne im Browser:" -ForegroundColor $Colors.Info
+    Write-Host "  $(Get-Text 'OpenInBrowser')" -ForegroundColor $Colors.Info
     Write-Host "     https://github.com/new" -ForegroundColor $Colors.Prompt
     Write-Host ""
-    Write-Host "  2. Fülle das Formular aus:" -ForegroundColor $Colors.Info
-    Write-Host "     Repository name:  $repoName" -ForegroundColor $Colors.Prompt
-    Write-Host "     Description:      $description" -ForegroundColor $Colors.Prompt
-    Write-Host "     Public:           ✅" -ForegroundColor $Colors.Success
-    Write-Host "     Add README:       ❌ (haben wir schon!)" -ForegroundColor $Colors.Warning
-    Write-Host "     Add .gitignore:   ❌ (haben wir schon!)" -ForegroundColor $Colors.Warning
-    Write-Host "     Choose license:   Apache License 2.0 ✅" -ForegroundColor $Colors.Success
+    Write-Host "  $(Get-Text 'FillForm')" -ForegroundColor $Colors.Info
+    Write-Host "     $(Get-Text 'RepoName')  $repoName" -ForegroundColor $Colors.Prompt
+    Write-Host "     $(Get-Text 'Description')      $description" -ForegroundColor $Colors.Prompt
+    Write-Host "     $(Get-Text 'Public')" -ForegroundColor $Colors.Success
+    Write-Host "     $(Get-Text 'AddREADME')" -ForegroundColor $Colors.Warning
+    Write-Host "     $(Get-Text 'AddGitignore')" -ForegroundColor $Colors.Warning
+    Write-Host "     $(Get-Text 'ChooseLicense')" -ForegroundColor $Colors.Success
     Write-Host ""
-    Write-Host "  3. Klicke 'Create repository'" -ForegroundColor $Colors.Info
+    Write-Host "  $(Get-Text 'ClickCreate')" -ForegroundColor $Colors.Info
     Write-Host ""
 
-    Write-Host "Drücke ENTER wenn du das Repository erstellt hast..." -ForegroundColor $Colors.Prompt
+    Write-Host (Get-Text "PressEnterWhenDone") -ForegroundColor $Colors.Prompt
     Read-Host
 
     Write-Host ""
-    Write-Host "Schritt 2: Lokales Repository verbinden" -ForegroundColor $Colors.Title
+    Write-Host (Get-Text "ManualStep2") -ForegroundColor $Colors.Title
     Write-Host ""
-    Write-Host "Bitte gib deinen GitHub-Username ein:" -ForegroundColor $Colors.Prompt -NoNewline
+    Write-Host (Get-Text "EnterUsername") -ForegroundColor $Colors.Prompt -NoNewline
     $username = Read-Host
 
     $repoUrl = "https://github.com/$username/$repoName.git"
 
     Write-Host ""
-    Write-Host "Repository URL: $repoUrl" -ForegroundColor $Colors.Info
+    Write-Host "$(Get-Text 'RepoURL') $repoUrl" -ForegroundColor $Colors.Info
     Write-Host ""
-    Write-Host "Führe folgende Befehle aus:" -ForegroundColor $Colors.Title
+    Write-Host (Get-Text "RunCommands") -ForegroundColor $Colors.Title
     Write-Host ""
     Write-Host "cd `"$projectPath`"" -ForegroundColor $Colors.Prompt
     Write-Host "git remote add origin $repoUrl" -ForegroundColor $Colors.Prompt
@@ -238,59 +431,61 @@ function Show-Manual-Method {
     Write-Host "git push -u origin main" -ForegroundColor $Colors.Prompt
     Write-Host ""
 
-    Write-Host "Soll ich diese Befehle jetzt ausführen? (j/n): " -ForegroundColor $Colors.Prompt -NoNewline
+    Write-Host (Get-Text "ExecuteNow") -ForegroundColor $Colors.Prompt -NoNewline
     $execute = Read-Host
 
-    if ($execute -eq "j") {
+    $yesKey = if ($Lang -eq "EN") { "y" } else { "j" }
+
+    if ($execute -eq $yesKey) {
         Write-Host ""
-        Write-Host "Füge Remote hinzu..." -ForegroundColor $Colors.Info
+        Write-Host (Get-Text "AddingRemote") -ForegroundColor $Colors.Info
         git remote add origin $repoUrl
 
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "✅ Remote hinzugefügt" -ForegroundColor $Colors.Success
+            Write-Host (Get-Text "RemoteAdded") -ForegroundColor $Colors.Success
         }
 
-        Write-Host "Benenne Branch zu main um..." -ForegroundColor $Colors.Info
+        Write-Host (Get-Text "RenamingBranch") -ForegroundColor $Colors.Info
         git branch -M main
 
-        Write-Host "Pushe zu GitHub..." -ForegroundColor $Colors.Info
+        Write-Host (Get-Text "Pushing") -ForegroundColor $Colors.Info
         git push -u origin main
 
         if ($LASTEXITCODE -eq 0) {
             Write-Host ""
             Write-Host "============================================================================" -ForegroundColor $Colors.Success
-            Write-Host "  ✅ Repository erfolgreich gepusht!" -ForegroundColor $Colors.Success
+            Write-Host "  $(Get-Text 'PushSuccess')" -ForegroundColor $Colors.Success
             Write-Host "============================================================================" -ForegroundColor $Colors.Success
             Write-Host ""
-            Write-Host "Repository URL:" -ForegroundColor $Colors.Title
+            Write-Host (Get-Text "RepoURL") -ForegroundColor $Colors.Title
             Write-Host "  https://github.com/$username/$repoName" -ForegroundColor $Colors.Info
             Write-Host ""
 
-            Write-Host "Im Browser öffnen? (j/n): " -ForegroundColor $Colors.Prompt -NoNewline
+            Write-Host (Get-Text "OpenBrowser") -ForegroundColor $Colors.Prompt -NoNewline
             $openBrowser = Read-Host
 
-            if ($openBrowser -eq "j") {
+            if ($openBrowser -eq $yesKey) {
                 Start-Process "https://github.com/$username/$repoName"
             }
         } else {
             Write-Host ""
-            Write-Host "❌ Fehler beim Pushen" -ForegroundColor $Colors.Error
+            Write-Host (Get-Text "PushError") -ForegroundColor $Colors.Error
             Write-Host ""
-            Write-Host "Mögliche Probleme:" -ForegroundColor $Colors.Warning
-            Write-Host "  - Repository existiert nicht auf GitHub" -ForegroundColor $Colors.Info
-            Write-Host "  - Falscher Username" -ForegroundColor $Colors.Info
-            Write-Host "  - Keine Git-Authentifizierung" -ForegroundColor $Colors.Info
+            Write-Host (Get-Text "PossibleIssues") -ForegroundColor $Colors.Warning
+            Write-Host "  $(Get-Text 'Issue1')" -ForegroundColor $Colors.Info
+            Write-Host "  $(Get-Text 'Issue2')" -ForegroundColor $Colors.Info
+            Write-Host "  $(Get-Text 'Issue3')" -ForegroundColor $Colors.Info
             Write-Host ""
-            Write-Host "Prüfe und versuche es erneut mit:" -ForegroundColor $Colors.Info
+            Write-Host (Get-Text "CheckAndRetry") -ForegroundColor $Colors.Info
             Write-Host "  git push -u origin main" -ForegroundColor $Colors.Prompt
         }
     } else {
         Write-Host ""
-        Write-Host "Befehle wurden nicht ausgeführt." -ForegroundColor $Colors.Warning
-        Write-Host "Du kannst sie manuell ausführen wenn du bereit bist." -ForegroundColor $Colors.Info
+        Write-Host (Get-Text "CommandsNotExecuted") -ForegroundColor $Colors.Warning
+        Write-Host (Get-Text "ExecuteManually") -ForegroundColor $Colors.Info
     }
 }
 
 Write-Host ""
-Write-Host "Drücke eine beliebige Taste zum Beenden..." -ForegroundColor $Colors.Info
+Write-Host (Get-Text "PressAnyKey") -ForegroundColor $Colors.Info
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
