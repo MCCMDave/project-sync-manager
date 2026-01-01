@@ -56,6 +56,32 @@ Synchronisiert Code-Dateien nach Nextcloud (ohne venv, cache, etc.).
 
 ---
 
+## Automatische Ausfuehrung
+
+### `setup-scheduled-task.ps1`
+Erstellt Windows Scheduled Tasks fuer automatische Backups.
+
+```powershell
+# Als Administrator ausfuehren!
+.\setup-scheduled-task.ps1
+```
+
+**Erstellt:**
+- `MelucioLabs-DB-Backup` - Taeglich um 03:00
+- `MelucioLabs-Code-Sync` - Alle 3 Tage um 04:00
+
+**Manuell starten:**
+```powershell
+Start-ScheduledTask -TaskName "MelucioLabs-DB-Backup"
+```
+
+**Tasks anzeigen:**
+```powershell
+Get-ScheduledTask -TaskName "MelucioLabs*"
+```
+
+---
+
 ## Voraussetzungen
 
 - Windows PowerShell 5.1+
