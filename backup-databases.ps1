@@ -8,7 +8,7 @@ $Timestamp = Get-Date -Format "yyyy-MM-dd"
 
 # Datenbanken auf dem Pi
 $Databases = @(
-    @{ Name = "kitchen"; Path = "/home/dave/kitchenhelper-ai/database/kitchenhelper.db" },
+    @{ Name = "kitchen"; Path = "/home/dave/khai/database/kitchenhelper.db" },
     @{ Name = "karten";  Path = "/home/dave/lernkarten-api-new/data/cards.db" }
 )
 
